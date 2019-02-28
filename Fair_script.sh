@@ -33,7 +33,7 @@ cd Project/samples
 
 IFS=$'\n'		# Make newlines the only separator
 
-for j in $(tail -n +2 ../../PRJNA304086true.txt)
+for j in $(tail -n +2 ../../conditions.txt)
 do
 	# get important informations from the line
 	access=$(echo "${j}" | cut -f6)
