@@ -36,30 +36,43 @@ IFS=$'\n'		# Make newlines the only separator
 for j in $(tail -n +2 ../../PRJNA304086true.txt)
 do
 	# get important informations from the line
-	access = $(echo "$j" | cut -f6)
-	id = $(echo "$j" | cut -f1)
-	md5 = $(echo "$j" | cut -f7)
+	access=$(echo "${j}" | cut -f6)
+	id=$(echo "${j}" | cut -f1)
+	md5=$(echo "${j}" | cut -f7)
 
 	echo "-----------------------------------------------------------------------"
 	echo ${id}
 	echo "-----------------------------------------------------------------------"
 
 	# Download file
-	wget ${acces}
+	wget ${access}
 
 	# Get md5 of downloaded file
-	md5_local = "$(md5sum $id.fastq.gz | cut -d' ' -f1)"
-	echo $md_local
+	md5_local="$(md5sum ${id}.fastq.gz | cut -d' ' -f1)"
+	echo ${md5_local}
+	echo ${md5}
 
 	# Test md5
-	if [ "$md5_local" == "$md5" ]
+	if [ "${md5_local}" == "${md5}" ]
 	then
 		echo "Done"
 	else
-		echo "Nope"
-		exit
+		echo "ERROR : ${id}.fasta.gz corrupted"
+		exit 1
 	fi
 done
 
 cd ../..
+
+echo "======================================================================================"
+echo " Download annotations"
+echo "======================================================================================"
+
+wget https://raw.githubusercontent.com/thomasdenecker/FAIR_Bioinfo/master/Data/O.tauri_annotation.gff -P Project/annotations
+
+echo "======================================================================================"
+echo " Download genome"
+echo "======================================================================================"
+
+wget https://raw.githubusercontent.com/thomasdenecker/FAIR_Bioinfo/master/Data/O.tauri_genome.fna -P Project/genome
 
