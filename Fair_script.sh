@@ -29,6 +29,11 @@ echo "==========================================================================
 echo "Download data from SRA"
 echo "================================================================================"
 
+if  [ ! -f "md5List.txt" ]
+then
+	touch "md5List.txt"
+fi
+
 cd Project/samples
 
 IFS=$'\n'		# Make newlines the only separator
@@ -54,8 +59,8 @@ do
 	echo ${#md5_local}
 	echo ${#md5}
 
-	echo ${md5_local} >> "md5sums.txt"
-	echo ${md5} >> "md5sums.txt"
+	echo "$md5_local" >> "md5List.txt"
+	echo "$md5" >> "md5List.txt"
 	md5Test=${md5} | tr -d ' '
 
 	# Test md5
