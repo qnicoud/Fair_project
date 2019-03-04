@@ -54,10 +54,10 @@ do
 	echo ${#md5_local}
 	echo ${#md5}
 
-	localTest=${md5_local} | tr -d ' '
+	md5Test=${md5} | tr -d ' '
 
 	# Test md5
-	if [ "${localtest}" == "${md5}" ]
+	if [ "${md5_local}" == "${md5test}" ]
 	then
 		echo "Done"
 	else
