@@ -29,10 +29,15 @@ echo "==========================================================================
 echo "Download data from SRA"
 echo "================================================================================"
 
-if  [ ! -f "md5List.txt" ]
+if  [ -f "md5List.txt" ]
 then
 	touch "md5List.txt"
+else
+	echo "md5List.txt already exist"
 fi
+echo "=====================================================================================" >> "md5List.txt"
+echo "Session of the " "$(date)" >> "md5List.txt"
+echo "=====================================================================================" >> "md5List.txt"
 
 cd Project/samples
 
@@ -49,31 +54,41 @@ do
 	echo ${id}
 	echo "-----------------------------------------------------------------------"
 
-	# Download file
-	wget ${access}
+	if [ -f Project/samples/"${id}.fastq.gz" ]
+	then
+		# Download file
+		wget ${access}
+	else
+		echo "${id}.fastq.gz already exist"
+	fi
 
 	# Get md5 of downloaded file
-	md5_local="$(md5sum ${id}.fastq.gz | cut -d' ' -f1)"
+	md5_local=$(md5sum ${id}.fastq.gz | cut -d' ' -f1)
 	echo ${md5_local}
 	echo ${md5}
 	echo ${#md5_local}
 	echo ${#md5}
 
 	cd ../..
-	echo "$md5_local" >> "md5List.txt"
-	echo "$md5" >> "md5List.txt"
-	cd Project/samples
+	echo "$id" >> "md5List.txt"
+	echo "local" "$md5_local" >> "md5List.txt"
+	echo "distant" "$md5" >> "md5List.txt"
 
-	md5Test=${md5} | tr -d ' '
+	md5Test=$( echo "${md5}" | sed 's/ //g' )
+
+	echo ${#md5Test}
 
 	# Test md5
 	if [ "${md5_local}" == "${md5test}" ]
 	then
 		echo "Done"
+		echo "md5 are similar" >> "md5List.txt"
 	else
 		echo "ERROR : ${id}.fasta.gz corrupted"
-		exit 1
+		echo "md5 are different" >> "md5List.txt"
 	fi
+	echo "---------------------------------------------------------" >> "md5List.txt"
+	cd Project/samples
 done
 
 cd ../..
@@ -81,12 +96,19 @@ cd ../..
 echo "======================================================================================"
 echo " Download annotations"
 echo "======================================================================================"
-
-wget https://raw.githubusercontent.com/thomasdenecker/FAIR_Bioinfo/master/Data/O.tauri_annotation.gff -P Project/annotations
+if [ -f Project/annotations/O.tauri_annotation.gff ]
+then
+	wget https://raw.githubusercontent.com/thomasdenecker/FAIR_Bioinfo/master/Data/O.tauri_annotation.gff -P Project/annotations
+else
+	echo "The file already exist."
+fi
 
 echo "======================================================================================"
 echo " Download genome"
 echo "======================================================================================"
-
-wget https://raw.githubusercontent.com/thomasdenecker/FAIR_Bioinfo/master/Data/O.tauri_genome.fna -P Project/genome
-
+if [ -f Project/annotations/O.tauri_genome.fna ]
+then
+	wget https://raw.githubusercontent.com/thomasdenecker/FAIR_Bioinfo/master/Data/O.tauri_genome.fna -P Project/genome
+else
+	echo "The file already exist"
+fi
