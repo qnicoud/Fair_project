@@ -59,8 +59,11 @@ do
 	echo ${#md5_local}
 	echo ${#md5}
 
+	cd ../..
 	echo "$md5_local" >> "md5List.txt"
 	echo "$md5" >> "md5List.txt"
+	cd Project/samples
+
 	md5Test=${md5} | tr -d ' '
 
 	# Test md5
