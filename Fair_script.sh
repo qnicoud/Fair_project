@@ -54,6 +54,8 @@ do
 	echo ${#md5_local}
 	echo ${#md5}
 
+	echo ${md5_local} >> "md5sums.txt"
+	echo ${md5} >> "md5sums.txt"
 	md5Test=${md5} | tr -d ' '
 
 	# Test md5
