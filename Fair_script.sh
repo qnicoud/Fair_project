@@ -39,11 +39,14 @@ echo "==========================================================================
 echo "Session of the " "$(date)" >> "md5List.txt"
 echo "=====================================================================================" >> "md5List.txt"
 
+# Remove double backlines of Windows to stadard backline of Unix
+sed 's/\r$/\n/' conditions.txt > conditionsCorr.txt
+
 cd Project/samples
 
 IFS=$'\n'		# Make newlines the only separator
 
-for j in $(tail -n +2 ../../conditions.txt)
+for j in $(tail -n +2 ../../conditionsCorr.txt)
 do
 	# get important informations from the line
 	access=$(echo "${j}" | cut -f6)
@@ -64,30 +67,25 @@ do
 
 	# Get md5 of downloaded file
 	md5_local="$(md5sum ${id}.fastq.gz | cut -d' ' -f1)"
-	echo ${md5_local}
-	echo ${md5}
-	echo ${#md5_local}
-	echo ${#md5}
 
 	cd ../..
 	echo "$id" >> "md5List.txt"
-	echo "local" "$md5_local" >> "md5List.txt"
-	echo "distant" "$md5" >> "md5List.txt"
+	echo "local" "md5 length ${#md5Local}; code: ${md5_local}" >> "md5List.txt"
+	echo "distant" "md5 length ${#md5}; code: ${md5}" >> "md5List.txt"
 
 	#md5Test=$( echo "${md5}" | sed 's/ //g' )
+	#md5Test=$( echo "$md5" | sed 's/\r//' )
 	#md5Test=$( echo "${md5}" | tr -d ' ' )
-	md5Test=$(echo ${md5//[[:blank:]]/})
-
-	echo ${#md5Test}
+	#md5Test=$(echo ${md5//[[:blank:]]/})
 
 	# Test md5
-	if [ "${md5_local}" == "${md5test}" ]
+	if [ "${md5_local}" == "${md5}" ]
 	then
 		echo "Done"
-		echo "md5 are similar" >> "md5List.txt"
+		echo "Download successfull." >> "md5List.txt"
 	else
 		echo "ERROR : ${id}.fasta.gz corrupted"
-		echo "md5 are different" >> "md5List.txt"
+		echo "Download failed." >> "md5List.txt"
 	fi
 	echo "---------------------------------------------------------" >> "md5List.txt"
 	cd Project/samples
@@ -98,7 +96,7 @@ cd ../..
 echo "======================================================================================"
 echo " Download annotations"
 echo "======================================================================================"
-if [ -f Project/annotations/O.tauri_annotation.gff ]
+if [ ! -f Project/annotations/O.tauri_annotation.gff ]
 then
 	wget https://raw.githubusercontent.com/thomasdenecker/FAIR_Bioinfo/master/Data/O.tauri_annotation.gff -P Project/annotations
 else
@@ -108,7 +106,7 @@ fi
 echo "======================================================================================"
 echo " Download genome"
 echo "======================================================================================"
-if [ -f Project/annotations/O.tauri_genome.fna ]
+if [ ! -f Project/genome/O.tauri_genome.fna ]
 then
 	wget https://raw.githubusercontent.com/thomasdenecker/FAIR_Bioinfo/master/Data/O.tauri_genome.fna -P Project/genome
 else

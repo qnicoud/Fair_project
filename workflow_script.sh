@@ -13,6 +13,7 @@
 
 # Name of the files to analyze
 dirlist=$(find Project/samples/*.fastq.gz)
+echo  $dirlist
 # Name of the file containing the reference genome
 genome="./Project/genome/O.tauri_genome.fna"
 # Name of the fil containing the annotation of the genome
@@ -22,15 +23,18 @@ for file in $dirlist
 do
 	# Name without path
 	file_name="$(basename $file)"
+	echo $file_name
 	# Name without path and .gz
 	nameFastq="${file_name%.*}"
+	echo $nameFastq
 	# Name without path, gz and fastq
 	sample="${nameFastq%.*}"
+	echo $sample
 
 	echo "============================================================================================================"
 	echo "Quality chech with fastqc of sample ${sample}"
 	echo "============================================================================================================"
-	fastqc Project/samples/${sample}.fastq.gz --outdir Project/fastqc
+	fastqc Project/samples/${file_name} --outdir Project/fastqc/
 
 	echo "============================================================================================================"
 	echo "Indexing reference genome"
@@ -52,7 +56,7 @@ do
 	echo "============================================================================================================"
 	echo "Comptage -échantillon ${sample}"
 	echo "============================================================================================================"
-	htseq-count --stranded=no --type='gene' ==idattr='ID' --order=name --format=bam Project/samtools/bowtie-${sample}.sorted.bam ${annotations} > Project/htseq/count-${sample}.txt
+	htseq -count --stranded=no --type='gene' ==idattr='ID' --order=name --format=bam Project/samtools/bowtie-${sample}.sorted.bam ${annotations} > Project/htseq/count-${sample}.txt
 
 	echo "============================================================================================================"
 	echo "Cleaning useless files - sample ${sample}"
