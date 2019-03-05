@@ -63,7 +63,7 @@ do
 	fi
 
 	# Get md5 of downloaded file
-	md5_local=$(md5sum ${id}.fastq.gz | cut -d' ' -f1)
+	md5_local="$(md5sum ${id}.fastq.gz | cut -d' ' -f1)"
 	echo ${md5_local}
 	echo ${md5}
 	echo ${#md5_local}

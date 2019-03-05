@@ -23,7 +23,7 @@ export PATH=~/miniconda3/bin:$PATH
 
 	## Update
 conda update conda
-conda uptade --all
+conda update --all
 
 	## Add channels
 conda config --add channels conda-forge
