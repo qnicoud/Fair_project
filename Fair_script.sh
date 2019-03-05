@@ -74,7 +74,9 @@ do
 	echo "local" "$md5_local" >> "md5List.txt"
 	echo "distant" "$md5" >> "md5List.txt"
 
-	md5Test=$( echo "${md5}" | sed 's/ //g' )
+	#md5Test=$( echo "${md5}" | sed 's/ //g' )
+	#md5Test=$( echo "${md5}" | tr -d ' ' )
+	md5Test=$(echo ${md5//[[:blank:]]/})
 
 	echo ${#md5Test}
 
