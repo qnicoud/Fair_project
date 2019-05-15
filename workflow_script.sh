@@ -17,7 +17,7 @@ echo  $dirlist
 # Name of the file containing the reference genome
 genome="./Project/genome/O.tauri_genome.fna"
 # Name of the fil containing the annotation of the genome
-annotation="./Project/annotations/O.tauri_annotation.gff"
+annotations="./Project/annotations/O.tauri_annotation.gff"
 
 for file in $dirlist
 do
@@ -56,7 +56,7 @@ do
 	echo "============================================================================================================"
 	echo "Comptage -échantillon ${sample}"
 	echo "============================================================================================================"
-	htseq -count --stranded=no --type='gene' ==idattr='ID' --order=name --format=bam Project/samtools/bowtie-${sample}.sorted.bam ${annotations} > Project/htseq/count-${sample}.txt
+	htseq-count --stranded=no --type='gene' --idattr='ID' --order=name --format=bam Project/samtools/bowtie-${sample}.sorted.bam ${annotations} > Project/htseq/count-${sample}.txt
 
 	echo "============================================================================================================"
 	echo "Cleaning useless files - sample ${sample}"

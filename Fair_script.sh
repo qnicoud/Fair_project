@@ -31,10 +31,11 @@ echo "==========================================================================
 
 if  [ -f "md5List.txt" ]
 then
-	touch "md5List.txt"
+	echo "md5List.txt alrezady exist"
 else
-	echo "md5List.txt already exist"
+	touch "md5List.txt"
 fi
+
 echo "=====================================================================================" >> "md5List.txt"
 echo "Session of the " "$(date)" >> "md5List.txt"
 echo "=====================================================================================" >> "md5List.txt"
@@ -57,7 +58,7 @@ do
 	echo ${id}
 	echo "-----------------------------------------------------------------------"
 
-	if [ -f Project/samples/"${id}.fastq.gz" ]
+	if [ ! -f Project/samples/"${id}.fastq.gz" ]
 	then
 		# Download file
 		wget ${access}
@@ -81,7 +82,7 @@ do
 	# Test md5
 	if [ "${md5_local}" == "${md5}" ]
 	then
-		echo "Done"
+	 	echo "Done"
 		echo "Download successfull." >> "md5List.txt"
 	else
 		echo "ERROR : ${id}.fasta.gz corrupted"
