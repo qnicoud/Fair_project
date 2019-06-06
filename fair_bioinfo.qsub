@@ -8,11 +8,11 @@ echo "|				     Start job !			     |"
 echo "*======================================================================*"
 
 echo -ne "Changing current directory for the project directory... "
-cd /home/thomas.denecker/FAIR_Bioinfo/
+cd /home/quentin.nicoud/Fair_Project/
 echo "Done!"
 
 echo -ne "Openning container and executing FAIR_script.sh... "
-singularity exec -B /home/thomas.denecker/FAIR_Bioinfo/:/home/rstudio fair_bioinfo.simg bash ./FAIR_script.sh
+singularity exec -B /home/quentin.nicoud/Fair_Project/:/home/rstudio fair_bioinfo.simg bash ./Fair_script_parallel.sh
 echo "Done!"
 
 echo "*======================================================================*"
