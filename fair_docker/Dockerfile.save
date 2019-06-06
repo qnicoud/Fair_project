@@ -1,0 +1,106 @@
+FROM rocker/binder
+
+## USER
+USER root
+
+## UPDATE
+RUN apt-get update
+
+ENV HOME /home
+WORKDIR ${HOME}
+
+## Install Conda
+RUN apt-get install -y wget bzip2
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+RUN bash Miniconda3-latest-Linux-x86_64.sh -b
+RUN rm Miniconda3-latest-Linux-x86_64.sh
+
+ENV PATH /home/miniconda3/bin:$PATH
+
+## Update
+RUN conda update conda
+RUN conda update --all
+
+## Add chanel
+RUN conda config --add channels conda-forge
+RUN conda config --add channels bioconda
+
+## Install Snakemake
+RUN conda install -c bioconda -c conda-forge snakemake
+
+## Install workflow tools
+RUN conda install -y fastqc bowtie2 htseq samtools
+
+## Install aspera
+RUN conda install-y hcc aspera-cli
+
+## Install Bioconductor package
+RUN Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") ; BiocManager::install("DESeq2", version = "3.8")'
+RUN Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") ; BiocManager::install("edgeR", version = "3.8")'
+RUN Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") ; BiocManager::install("genefilter", version = "3.8")'
+
+## Install CRAN package
+RUN Rscript -e "install.packages('devtools', repos='https://cran.rstudio.com/', dependencies = TRUE)" \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+RUN Rscript -e "install.packages(c('shinydashboard','DT', 'FactoMineR', 'corrplot','plotly'), repos='https://cran.rstudio.com/', dependencies = TRUE)" \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+RUN Rscript -e "install.packages(c('shinyWidgets','colourpicker'), repos='https://cran.rstudio.com/', dependencies = TRUE)" \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+RUN Rscript -e "install.packages(c('shinycssloaders'), repos='https://cran.rstudio.com/', dependencies = TRUE)" \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+
+## Install Sarstools
+RUN Rscript -e 'library(devtools) ; install_github("PF2-pasteur-fr/SARTools", build_vignettes=TRUE)'
+
+8- Installation des packages R
+Le dockerfile de notre projet
+
+# Install fastq dump
+
+RUN wget --quiet "https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.2/sratoolkit.2.9.2-ubuntu64.tar.gz"
+RUN tar -xzf sratoolkit.2.9.2-ubuntu64.tar.gz
+RUN rm sratoolkit.2.9.2-ubuntu64.tar.gz
+ENV PATH /home/sratoolkit.2.9.2-ubuntu64/bin:$PATH
+
+9- Installation de fastq dump
+
+USER rstudio
+ENV HOME /home/rstudio
+WORKDIR ${HOME}
+
+10- Changement d'utilisateur et de dossier de travail
+Le dockerfile de notre projet
+
+CMD jupyter notebook --ip 0.0.0.0 --NotebookApp.token='' --NotebookApp.password=''
+
+11- Commande lancée lors du démarrage du docker 
+
+Pas obligatoire ici, mais simplifie grandement l'utilisation car élimine le mot de passe 
+
+Et voilà !
+
+Il ne reste plus qu'à construire l'image
+
+docker buil --tag=fair_bioinfo .
+
+Partager une image
+Identification pour docker hub
+
+Rappel
+
+Il faut avoir un compte et avoir docker actif
+
+ 
+
+Se loguer
+
+Id et mot de passe 
+
+$ docker login
+Authenticating with existing credentials...
+Login Succeeded
+
+Commandes pratiques
+Le dockerfile de notre projet ## Install Bioconductor package RUN Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") ; BiocManager::install("DESeq2", version = "3.8")' RUN Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") ; BiocManager::install("edgeR", version = "3.8")' RUN Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") ; BiocManager::install("genefilter", version = "3.8")' ## Install CRAN package RUN Rscript -e "install.packages('devtools', repos='https://cran.rstudio.com/', dependencies = TRUE)" \ && rm -rf /tmp/downloaded_packages/ /tmp/*.rds RUN Rscript -e "install.packages(c('shinydashboard','DT', 'FactoMineR', 'corrplot','plotly'), repos='https://cran.rstudio.com/', dependencies = TRUE)" \ && rm -rf /tmp/downloaded_packages/ /tmp/*.rds RUN Rscript -e "install.packages(c('shinyWidgets','colourpicker'), repos='https://cran.rstudio.com/', dependencies = TRUE)" \ && rm -rf /tmp/downloaded_packages/ /tmp/*.rds RUN Rscript -e "install.packages(c('shinycssloaders'), repos='https://cran.rstudio.com/', dependencies = TRUE)" \ && rm -rf /tmp/downloaded_packages/ /tmp/*.rds ## Install Sarstools RUN Rscript -e 'library(devtools) ; install_github("PF2-pasteur-fr/SARTools", build_vignettes=TRUE)' 8- Installation des packages R
+
+

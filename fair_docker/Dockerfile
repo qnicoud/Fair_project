@@ -1,0 +1,69 @@
+FROM rocker/binder
+
+## USER
+USER root
+
+## Update
+RUN apt-get update
+
+ENV HOME /home
+WORKDIR ${HOME}
+
+## Install Conda
+RUN apt-get install -y wget bzip2
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+RUN bash Miniconda3-latest-Linux-x86_64.sh -b
+RUN rm Miniconda3-latest-Linux-x86_64.sh
+
+ENV PATH /home/miniconda3/bin:$PATH
+
+## Update
+RUN conda update conda
+RUN conda update --all
+
+## Add chanel
+RUN conda config --add channels conda-forge
+RUN conda config --add channels bioconda
+
+## Install snakemake
+RUN conda install -c bioconda -c conda-forge snakemake
+
+## Install workflow tools
+RUN conda install -y --update-deps fastqc bowtie2 htseq samtools
+
+## Install aspera
+RUN conda install -c hcc aspera-cli
+
+## Install Bioconductor package
+RUN Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") ; BiocManager::install("DESeq2", version = "3.9")'
+RUN Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") ; BiocManager::install("edgeR", version = "3.9")'
+RUN Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") ; BiocManager::install("genefilter", version = "3.9")'
+
+## Install CRAN package
+RUN Rscript -e "install.packages('devtools', repos='https://cran.rstudio.com/', dependencies = TRUE)" \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+RUN Rscript -e "install.packages(c('shinydashboard','DT', 'FactoMineR', 'corrplot','plotly'), repos='https://cran.rstudio.com/', dependencies = TRUE)" \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+RUN Rscript -e "install.packages(c('shinyWidgets','colourpicker'), repos='https://cran.rstudio.com/', dependencies = TRUE)" \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+RUN Rscript -e "install.packages(c('shinycssloaders'), repos='https://cran.rstudio.com/', dependencies = TRUE)" \
+    && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+
+## Install Sarstools
+RUN Rscript -e 'library(devtools) ; install_github("PF2-pasteur-fr/SARTools", build_vignettes=TRUE)'
+
+# Install fastq dump
+RUN wget --quiet "https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.2/sratoolkit.2.9.2-ubuntu64.tar.gz"
+RUN tar -xzf sratoolkit.2.9.2-ubuntu64.tar.gz
+RUN rm sratoolkit.2.9.2-ubuntu64.tar.gz
+ENV PATH /home/sratoolkit.2.9.2-ubuntu64/bin:$PATH
+
+## Link the right C++ standard library to the ENV variable LD_PRELOAD
+	## If not bowtie2-build will fail to execute
+export LD_PRELOAD="/home/miniconda3/lib/libstdc++.so.6.0.25"
+
+USER rstudio
+ENV HOME /home/rstudio
+WORKDIR ${HOME}
+
+CMD jupyter notebook --ip 0.0.0.0 --NotebookApp.token='' --NotebookApp.password=''
