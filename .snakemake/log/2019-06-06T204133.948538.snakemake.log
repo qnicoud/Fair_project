@@ -1,0 +1,5 @@
+PermissionError in line 3 of /home/qnicoud/GitProjects/Fair_Project/Snakefile:
+[Errno 13] Permission denied: '/home/rstudio'
+  File "/home/qnicoud/GitProjects/Fair_Project/Snakefile", line 3, in <module>
+  File "/usr/lib/python3.6/os.py", line 210, in makedirs
+  File "/usr/lib/python3.6/os.py", line 220, in makedirs
