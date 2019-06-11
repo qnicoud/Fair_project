@@ -1,7 +1,10 @@
+
 #!/bin/sh
 
 #PBS -q lowprio
 #PBS -l select=1:ncpus=6
+#PBS -m abe
+#PBS -M quentin.nicoud@gmail.com
 
 echo "*======================================================================*"
 echo "|				     Start job !			     |"

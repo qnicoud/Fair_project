@@ -58,10 +58,6 @@ RUN tar -xzf sratoolkit.2.9.2-ubuntu64.tar.gz
 RUN rm sratoolkit.2.9.2-ubuntu64.tar.gz
 ENV PATH /home/sratoolkit.2.9.2-ubuntu64/bin:$PATH
 
-## Link the right C++ standard library to the ENV variable LD_PRELOAD
-	## If not bowtie2-build will fail to execute
-RUN export LD_PRELOAD="/home/miniconda3/lib/libstdc++.so.6.0.25"
-
 USER rstudio
 ENV HOME /home/rstudio
 WORKDIR ${HOME}
