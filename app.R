@@ -11,7 +11,7 @@
 
 rm(list = ls())
 
-if( !require(anyLib) )
+if( !require(anyLlib) )
 {
   install.packages("anyLib")
   
